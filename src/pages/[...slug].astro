@@ -1,0 +1,71 @@
+---
+import { useStoryblokApi } from "@storyblok/astro";
+import StoryblokComponent from "@storyblok/astro/StoryblokComponent.astro";
+import Layout from "../layouts/Layout.astro";
+import { PageStoryblok } from "../stores/models/storyblok";
+
+const sbApi = useStoryblokApi();
+
+export async function getStaticPaths() {
+    //You can also have this in an utils file so it can be reused.
+    let languages: Array<{ lang: string; slug: string }> = ["de", "fr"];
+    const storyblokApi = useStoryblokApi();
+    const { data } = await storyblokApi.get("cdn/links", {
+        version: "draft",
+    });
+    let links = data.links;
+    links = Object.values(links);
+    let paths = [];
+    links.forEach((link: { slug: string }) => {
+        languages.forEach((language) => {
+            console.log("slug", link.slug);
+            //This slug will be used for fetching data from storyblok
+            let slug = link.slug === "home" ? undefined : link.slug;
+            //This will be used for generating all the urls for astro
+            let full_url =
+                language === "de" ? slug : `${language}/${slug ?? ""}`;
+            //This will let us change the url for diffrent versions
+            //We are storing all the possible language urls
+            let langSwitch = languages.map((lang) => ({
+                lang,
+                slug:
+                    lang === "de" ? `/${slug ?? ""}` : `/${lang}/${slug ?? ""}`,
+            }));
+
+            paths.push({
+                props: { language, slug, langSwitch },
+                params: {
+                    slug: full_url,
+                },
+            });
+        });
+    });
+    return paths;
+}
+
+export interface Props {
+    slug: string;
+    langSwitch: Array<{ lang: string; slug: string }>;
+    language: string;
+    children: any;
+}
+
+console.log("slug", Astro.props.slug);
+console.log("language", Astro.props.language);
+console.log("langSwitch", Astro.props.langSwitch);
+const { slug, language, langSwitch } = Astro.props as Props;
+const storyblokApi = useStoryblokApi();
+const { data } = await storyblokApi.get(
+    `cdn/stories/${slug === undefined ? "home" : slug}`,
+    {
+        version: import.meta.env.DEV ? "draft" : "published",
+        resolve_relations: ["popular-articles.articles"],
+        language,
+    },
+);
+const story = data.story;
+---
+
+<Layout langSwitch={langSwitch} language={language}>
+    <StoryblokComponent language={language} blok={story.content} />
+</Layout>
