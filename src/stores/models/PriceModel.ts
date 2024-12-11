@@ -1,0 +1,20 @@
+export interface PriceModel {
+    area_min?: number,
+    area_max?: number,
+    fill?: number,
+    stitches_number?: number,
+    quantity_1?: string,
+    price_1?: number,
+    quantity_2?: string,
+    price_2?: number,
+    quantity_3?: string,
+    price_3?: number,
+    quantity_4?: string,
+    price_4?: number,
+    quantity_5?: string,
+    price_5?: number,
+    quantity_6?: string,
+    price_6?: number,
+    quantity_7?: string,
+    price_7?: number
+}

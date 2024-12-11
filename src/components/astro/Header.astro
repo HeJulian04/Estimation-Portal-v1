@@ -1,0 +1,41 @@
+---
+import { languages, getTransLink } from '../../utils/langs'
+const { language, langSwitch } = Astro.props
+
+---
+
+<header class="navbar bg-neutral rounded-full mb-24">
+    <div class="navbar-start">
+        <div class="dropdown">
+            <label class="btn btn-ghost btn-circle">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-300" fill="none"
+                     viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M4 6h16M4 12h16M4 18h7"/>
+                </svg>
+            </label>
+            <ul
+                class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+                <li><a href={getTransLink(language, '/')}>Homepage</a></li>
+                <li><a href={getTransLink(language, '/portal')}>Kostenvoranschlag Rechner</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="navbar-center">
+        <a class="btn btn-ghost normal-case text-xl hover:bg-neutral"><img
+                src="https://image.jimcdn.com/app/cms/image/transf/dimension=379x10000:format=png/path/s26c7e5adb5040439/image/ifd13ffc3bb80dfaf/version/1614251352/image.png"
+                alt="Logo"/></a>
+    </div>
+    <div class="navbar-end mr-4">
+        {
+            langSwitch && langSwitch.length > 0 && languages.map((lang, index) => (
+                        <a
+                                class={`lang-toggle hover:text-red-400 px-2 text-white ${lang === language ? 'font-bold' : ''}`}
+                                href={langSwitch[index].slug}
+                        >
+                            {(langSwitch[index].lang).toUpperCase()}
+                        </a>
+            ))
+        }
+    </div>
+</header>
